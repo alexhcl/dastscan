@@ -1,0 +1,21 @@
+wait_for_analysis: false
+name: DAST
+on:
+  workflow_dispatch:
+
+jobs:
+  dast:
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: alexhcl/appscan360-dast-action@v1
+        with:
+          baseurl:        ${{ vars.APPSCAN_URL }}
+          appscan_key:    ${{ secrets.APPSCAN_KEY }}
+          appscan_secret: ${{ secrets.APPSCAN_SECRET }}
+          ca_certificate: ${{ secrets.APPSCAN_CA_PEM }}
+          application_id: ${{ vars.APPSCAN_APP_ID }}
+          starting_URL:   https://staging.internal.example.com
+          wait_for_analysis: false
+          debug: true
