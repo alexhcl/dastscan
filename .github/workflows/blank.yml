@@ -12,6 +12,7 @@ jobs:
 
       - uses: alexhcl/appscan360-dast-action@v1
         with:
+          accept_ssl: true
           baseurl:        ${{ vars.APPSCAN_URL }}
           appscan_key:    ${{ secrets.APPSCAN_KEY }}
           appscan_secret: ${{ secrets.APPSCAN_SECRET }}
