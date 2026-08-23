@@ -18,6 +18,6 @@ jobs:
           appscan_secret: ${{ secrets.APPSCAN_SECRET }}
           ca_certificate: ${{ secrets.APPSCAN_CA_PEM }}
           application_id: ${{ vars.APPSCAN_APP_ID }}
-          starting_URL:   https://staging.internal.example.com
+          starting_URL:   https://demo.testfire.net/
           wait_for_analysis: false
           debug: true
