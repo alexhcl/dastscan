@@ -1,10 +1,11 @@
-wait_for_analysis: false
+
 name: DAST
 on:
   workflow_dispatch:
 
 jobs:
   dast:
+    
     runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v4
