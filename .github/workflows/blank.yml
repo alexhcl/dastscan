@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: alexhcl/appscan360-dast-action@v1
+      - uses: alexhcl/appscan360-dast-action@v2
         with:
           accept_ssl: true
           baseurl:        ${{ vars.APPSCAN_URL }}
