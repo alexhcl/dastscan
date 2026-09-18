@@ -1,25 +1,30 @@
-
 name: DAST
 on:
   workflow_dispatch:
 
 jobs:
   dast:
-    
     runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v4
 
-      - uses: alexhcl/appscan360-dast-action@v2
-        env:
-          ACCEPTSSL: "true"  
+      - name: AppScan 360 DAST
+        id: dast
+        uses: alexhcl/appscan360-dast-action@v2
         with:
-          accept_ssl: true
           baseurl:        ${{ vars.APPSCAN_URL }}
-          appscan_key:    ${{ secrets.APPSCAN_KEY }}
-          appscan_secret: ${{ secrets.APPSCAN_SECRET }}
-          ca_certificate: ${{ secrets.APPSCAN_CA_PEM }}
+          asoc_key:       ${{ secrets.APPSCAN_KEY }}
+          asoc_secret:    ${{ secrets.APPSCAN_SECRET }}
           application_id: ${{ vars.APPSCAN_APP_ID }}
+          dynamic_scan_type: dast
           starting_URL:   https://demo.testfire.net/
-          wait_for_analysis: false
-          debug: true
+          wait_for_analysis: true
+          fail_by_severity: true
+          failure_threshold: High
+
+      - name: Upload security report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appscan-report
+          path: ${{ steps.dast.outputs.report_file }}
