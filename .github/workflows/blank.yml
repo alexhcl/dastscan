@@ -20,7 +20,7 @@ jobs:
           starting_URL:   https://demo.testfire.net/
           wait_for_analysis: true
           fail_by_severity: true
-          failure_threshold: High
+          rescan_latest:  true  
 
       - name: Upload security report
         if: success() || failure()
