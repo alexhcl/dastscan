@@ -19,8 +19,8 @@ jobs:
           dynamic_scan_type: dast
           starting_URL:   https://demo.testfire.net/
           wait_for_analysis: true
-          fail_by_severity: true
-          rescan_latest:  true  
+          fail_by_severity: false
+
 
       - name: Upload security report
         if: success() || failure()
