@@ -6,9 +6,6 @@
 trigger:
 - main
 
-pool:
-  vmImage: ubuntu-latest
-
 steps:
 - task: HCLTechnologies.ApplicationSecurity-VSTS.custom-asoc-task.HCLAppScanOnCloud@2
   displayName: 'Run HCL AppScan on Cloud/HCL AppScan 360° Security Test'
