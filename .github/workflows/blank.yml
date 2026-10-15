@@ -12,8 +12,8 @@ jobs:
       - name: AppScan 360 DAST
         id: dast
         uses: alexhcl/appscan360-dast-action@v2
-        # env:
-        ACCEPTSSL: "true"
+        env:
+          ACCEPTSSL: "true"
         with:
           # ----- connection -----
           baseurl:        https://ascp.appscan.local
