@@ -5,26 +5,73 @@ on:
 jobs:
   dast:
     runs-on: [self-hosted, linux]
+    timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
 
       - name: AppScan 360 DAST
         id: dast
         uses: alexhcl/appscan360-dast-action@v2
+        # env:
+        ACCEPTSSL: "true"
         with:
-          baseurl:        ${{ vars.APPSCAN_URL }}
-          asoc_key:       ${{ secrets.APPSCAN_KEY }}
-          asoc_secret:    ${{ secrets.APPSCAN_SECRET }}
-          application_id: ${{ vars.APPSCAN_APP_ID }}
-          dynamic_scan_type: dast
-          starting_URL:   https://demo.testfire.net/
-          wait_for_analysis: true
-          fail_by_severity: false
+          # ----- connection -----
+          baseurl:        https://ascp.appscan.local
+          asoc_key:       local_31b50e73-2d09-6c6c-38f1-c4848369c7cd
+          asoc_secret:    89PSjpatUL99dHD+exQIwxeljFtdz2KvgjKomKqscTv7
+          application_id: 66026183-1ada-4a2f-be84-068dfdf384aa
 
+          # ----- mode: rescan the app's newest DAST scan (bootstraps on first run) -----
+          rescan_latest:  false
+          # scan_id: 413e0b6f-...              # pin the exact scan to rescan (optional)
+
+          # ----- creation settings (used on the first run / with rescan_latest off) -----
+          dynamic_scan_type: dast
+          starting_URL:   https://staging.yourapp.com
+          scan_name:      "GHA-${{ github.ref_name }}-${{ github.run_number }}"
+          optimization:   Fastest
+          login_method:   none
+          # login_method: userpass
+          # login_user:     ${{ secrets.SCAN_USER }}
+          # login_password: ${{ secrets.SCAN_PASSWORD }}
+          # login_method: recorded
+          # login_sequence_file: login.dast.config
+          # --- or configure from an AppScan Standard file instead: ---
+          # dynamic_scan_type: upload
+          # scan_or_scant_file: myapp-explored.scan
+          # scan_type: TestOnly                # FullScan | TestOnly | ReportOnly
+
+          # ----- network -----
+          #network: private
+          #presence_id: ${{ vars.APPSCAN_PRESENCE_ID }}
+          # ephemeral_presence: true           # temp Presence in Docker on the runner
+
+          # ----- execution & results -----
+          wait_for_analysis: true
+          wait_for_analysis_timeout_minutes: 240
+          scan_history: true                   # past-scans table in every summary (default)
+          scan_history_limit: 15
+          email_notification: false
+          personal_scan: false
+
+          # ----- security gate -----
+          #fail_by_severity: true
+          #failure_threshold: High
+          #fail_for_noncompliance: false
+
+          # ----- post-scan custom script -----
+          post_scan_command: python3 scripts/notify.py
 
       - name: Upload security report
-        if: success() || failure()
+        if: success() || failure()             # keep the report when the gate fails
         uses: actions/upload-artifact@v4
         with:
-          name: appscan-report
+          name: appscan-report-${{ github.run_number }}
           path: ${{ steps.dast.outputs.report_file }}
+
+      - name: Use results downstream
+        if: always()
+        run: |
+          echo "Gate: ${{ steps.dast.outputs.gate_result }}"
+          echo "Critical: ${{ steps.dast.outputs.critical_count }}  High: ${{ steps.dast.outputs.high_count }}"
+          echo "Scan: ${{ steps.dast.outputs.scan_url }}"
