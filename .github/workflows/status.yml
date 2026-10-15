@@ -1,0 +1,35 @@
+name: "AppScan Scan Monitor"
+on:
+  workflow_dispatch:
+    inputs:
+      from_date:     { description: 'From date (yyyy-MM-dd)', required: false, default: '' }
+      to_date:       { description: 'To date (yyyy-MM-dd, inclusive)', required: false, default: '' }
+      scan_id:       { description: 'Exact scan ID', required: false, default: '' }
+      name_contains: { description: 'Scan name contains (case-insensitive)', required: false, default: '' }
+      max_reports:   { description: 'Max HTML reports to download', required: false, default: '10' }
+
+jobs:
+  monitor:
+    runs-on: [self-hosted, linux]
+    steps:
+      - name: List past AppScan 360 scans
+        uses: alexhcl/appscan360-dast-action@v2
+        with:
+          baseurl:        ${{ vars.APPSCAN_URL }}
+          asoc_key:       ${{ secrets.APPSCAN_KEY }}
+          asoc_secret:    ${{ secrets.APPSCAN_SECRET }}
+          application_id: ${{ vars.APPSCAN_APP_ID }}
+          monitor: true
+          monitor_from_date:     ${{ inputs.from_date }}
+          monitor_to_date:       ${{ inputs.to_date }}
+          monitor_scan_id:       ${{ inputs.scan_id }}
+          monitor_name_contains: ${{ inputs.name_contains }}
+          monitor_max_reports:   ${{ inputs.max_reports }}
+
+      - name: Attach the downloaded reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appscan-monitor-reports-${{ github.run_number }}
+          path: 'AppScan_Monitor_Report-*.html'
+          if-no-files-found: ignore
