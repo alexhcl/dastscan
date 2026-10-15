@@ -10,7 +10,7 @@ on:
 
 jobs:
   monitor:
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted]
     steps:
       - name: List past AppScan 360 scans
         uses: alexhcl/appscan360-dast-action@v2
