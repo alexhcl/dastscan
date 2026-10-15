@@ -10,15 +10,15 @@ on:
 
 jobs:
   monitor:
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, windows]   # or [self-hosted, windows] — the action supports both
     steps:
       - name: List past AppScan 360 scans
         uses: alexhcl/appscan360-dast-action@v2
         with:
-          baseurl:        https://ascp.appscan.local
-          asoc_key:       local_31b50e73-2d09-6c6c-38f1-c4848369c7cd
-          asoc_secret:    89PSjpatUL99dHD+exQIwxeljFtdz2KvgjKomKqscTv7
-          application_id: 66026183-1ada-4a2f-be84-068dfdf384aa
+          baseurl:        ${{ vars.APPSCAN_URL }}
+          asoc_key:       ${{ secrets.APPSCAN_KEY }}
+          asoc_secret:    ${{ secrets.APPSCAN_SECRET }}
+          application_id: ${{ vars.APPSCAN_APP_ID }}
           monitor: true
           monitor_from_date:     ${{ inputs.from_date }}
           monitor_to_date:       ${{ inputs.to_date }}
