@@ -11,7 +11,7 @@ jobs:
 
       - name: AppScan 360 DAST
         id: dast
-        uses: alexhcl/appscan360-dast-action@v2
+        uses: alexhcl/appscan360-dast-action@main
         env:
           ACCEPTSSL: "true"
         with:
