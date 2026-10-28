@@ -18,8 +18,8 @@ jobs:
           ACCEPTSSL: "true"
         with:
           baseurl:        https://ascp.appscan.local
-          asoc_key:       local_31b50e73-2d09-6c6c-38f1-c4848369c7cd
-          asoc_secret:    89PSjpatUL99dHD+exQIwxeljFtdz2KvgjKomKqscTv7
+          asoc_key:       local_0bc7eab9-6906-91a1-1dc2-e59a596f2e7a
+          asoc_secret:    syyiaiMIM7lOj3OTIFGsTNqoXz1+jhPcnkouZFWAg5Gi
           application_id: 66026183-1ada-4a2f-be84-068dfdf384aa
           monitor: true
           monitor_from_date:     ${{ inputs.from_date }}
