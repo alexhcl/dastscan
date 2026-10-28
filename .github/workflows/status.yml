@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: List past AppScan 360 scans
         uses: alexhcl/appscan360-dast-action@v2
+        env:
+          ACCEPTSSL: "true"
         with:
           baseurl:        https://ascp.appscan.local
           asoc_key:       local_31b50e73-2d09-6c6c-38f1-c4848369c7cd
