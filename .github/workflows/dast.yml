@@ -27,7 +27,7 @@ jobs:
 
           # ----- creation settings (used on the first run / with rescan_latest off) -----
           dynamic_scan_type: dast
-          starting_URL:   https://demo.testfire.net/
+          starting_URL:   http://atletiirosii.info/
           scan_name:      "ALEX-GHA-${{ github.ref_name }}-${{ github.run_number }}"
           optimization:   Fastest
           login_method:   none
