@@ -60,7 +60,6 @@ jobs:
           #fail_for_noncompliance: false
 
           # ----- post-scan custom script -----
-          post_scan_command: python3 scripts/notify.py
 
       - name: Upload security report
         if: success() || failure()             # keep the report when the gate fails
