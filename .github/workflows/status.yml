@@ -6,20 +6,21 @@ on:
       to_date:       { description: 'To date (yyyy-MM-dd, inclusive)', required: false, default: '' }
       scan_id:       { description: 'Exact scan ID', required: false, default: '' }
       name_contains: { description: 'Scan name contains (case-insensitive)', required: false, default: '' }
-      max_reports:   { description: 'Max HTML reports to download', required: false, default: '10' }
+      max_reports:   { description: 'Max HTML reports to download (total)', required: false, default: '10' }
+      per_execution: { description: 'One report per execution (default); uncheck for one per scan', required: false, default: true, type: boolean }
 
 jobs:
   monitor:
-    runs-on: [self-hosted, windows]   # or [self-hosted, windows] — the action supports both
+    runs-on: [self-hosted, linux]   # or [self-hosted, windows] — the action supports both
     steps:
       - name: List past AppScan 360 scans
         uses: alexhcl/appscan360-dast-action@main
-        env:
           ACCEPTSSL: "true"
         with:
+          monitor_report_per_execution: true
           baseurl:        https://ascp.appscan.local
-          asoc_key:       local_0bc7eab9-6906-91a1-1dc2-e59a596f2e7a
-          asoc_secret:    syyiaiMIM7lOj3OTIFGsTNqoXz1+jhPcnkouZFWAg5Gi
+          asoc_key:       local_1a6a995b-1677-e766-1272-f41560d07efa
+          asoc_secret:    kjC/iCNyaiBBmSi4gKOnweuv3nd9diOKJPehTJC/72Q4
           application_id: 66026183-1ada-4a2f-be84-068dfdf384aa
           monitor: true
           monitor_from_date:     ${{ inputs.from_date }}
@@ -27,6 +28,7 @@ jobs:
           monitor_scan_id:       ${{ inputs.scan_id }}
           monitor_name_contains: ${{ inputs.name_contains }}
           monitor_max_reports:   ${{ inputs.max_reports }}
+          monitor_report_per_execution: ${{ inputs.per_execution }}
 
       - name: Attach the downloaded reports
         if: always()
