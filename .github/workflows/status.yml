@@ -12,11 +12,13 @@ on:
 
 jobs:
   monitor:
-    runs-on: [self-hosted, windows]   # the split job below needs a Linux runner (bash)
+    runs-on: [self-hosted, linux]   # or [self-hosted, windows] — both work now
     outputs:
-      reports: ${{ steps.list.outputs.json }}   # JSON array of report filenames
+      # JSON array of report filenames, emitted directly by the action.
+      reports: ${{ steps.mon.outputs.monitor_report_files_json }}
     steps:
       - name: List past AppScan 360 scans
+        id: mon
         uses: alexhcl/appscan360-dast-action@main
         env:
           ACCEPTSSL: "true"           # TLS skipped by default; set "false" here to enforce it
@@ -42,20 +44,6 @@ jobs:
           path: 'AppScan_Monitor_Report-*.html'
           if-no-files-found: ignore
 
-      # List the report files as a JSON array for the per-file split job below.
-      - name: Build report list
-        id: list
-        if: always()
-        shell: bash
-        run: |
-          shopt -s nullglob
-          files=(AppScan_Monitor_Report-*.html)
-          json="["; sep=""
-          for f in "${files[@]}"; do json="$json$sep\"$f\""; sep=","; done
-          json="$json]"
-          echo "json=$json" >> "$GITHUB_OUTPUT"
-          echo "Found ${#files[@]} report(s): $json"
-
   # Publish EACH report as its own artifact, so every execution's report is
   # downloadable separately from the run's Artifacts section.
   split:
@@ -72,8 +60,9 @@ jobs:
         with:
           name: appscan-monitor-reports-${{ github.run_number }}
       - name: Publish ${{ matrix.report }} on its own
+        if: matrix.report != ''
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.report }}
           path: ${{ matrix.report }}
-          if-no-files-found: ignore
+          if-no-files-found: warn
