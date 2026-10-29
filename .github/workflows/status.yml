@@ -1,4 +1,5 @@
 name: "AppScan Scan Monitor"
+
 on:
   workflow_dispatch:
     inputs:
@@ -11,12 +12,14 @@ on:
 
 jobs:
   monitor:
-    runs-on: [self-hosted, windows]   # or [self-hosted, windows] — the action supports both
+    runs-on: [self-hosted, windows]   # the split job below needs a Linux runner (bash)
+    outputs:
+      reports: ${{ steps.list.outputs.json }}   # JSON array of report filenames
     steps:
       - name: List past AppScan 360 scans
         uses: alexhcl/appscan360-dast-action@main
         env:
-          ACCEPTSSL: "true"
+          ACCEPTSSL: "true"           # TLS skipped by default; set "false" here to enforce it
         with:
           baseurl:        https://ascp.appscan.local
           asoc_key:       local_1a6a995b-1677-e766-1272-f41560d07efa
@@ -30,10 +33,47 @@ jobs:
           monitor_max_reports:   ${{ inputs.max_reports }}
           monitor_report_per_execution: ${{ inputs.per_execution }}
 
-      - name: Attach the downloaded reports
+      # One bundle artifact with every report (download once, all inside).
+      - name: Attach all reports (single bundle)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: appscan-monitor-reports-${{ github.run_number }}
           path: 'AppScan_Monitor_Report-*.html'
+          if-no-files-found: ignore
+
+      # List the report files as a JSON array for the per-file split job below.
+      - name: Build report list
+        id: list
+        if: always()
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=(AppScan_Monitor_Report-*.html)
+          json="["; sep=""
+          for f in "${files[@]}"; do json="$json$sep\"$f\""; sep=","; done
+          json="$json]"
+          echo "json=$json" >> "$GITHUB_OUTPUT"
+          echo "Found ${#files[@]} report(s): $json"
+
+  # Publish EACH report as its own artifact, so every execution's report is
+  # downloadable separately from the run's Artifacts section.
+  split:
+    needs: monitor
+    if: needs.monitor.outputs.reports != '' && needs.monitor.outputs.reports != '[]'
+    runs-on: [self-hosted, linux]
+    strategy:
+      fail-fast: false
+      matrix:
+        report: ${{ fromJSON(needs.monitor.outputs.reports) }}
+    steps:
+      - name: Get the report bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: appscan-monitor-reports-${{ github.run_number }}
+      - name: Publish ${{ matrix.report }} on its own
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.report }}
+          path: ${{ matrix.report }}
           if-no-files-found: ignore
