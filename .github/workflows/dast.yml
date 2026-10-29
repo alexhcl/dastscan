@@ -10,8 +10,7 @@ concurrency:
 
 jobs:
   dast:
-    runs-on: [self-hosted, windows]   # or [self-hosted, windows] — the action supports both
-						
+    runs-on: [self-hosted, linux]   # or [self-hosted, windows] — the action supports both
     steps:
       - uses: actions/checkout@v4
 
@@ -19,9 +18,8 @@ jobs:
         id: dast
         uses: alexhcl/appscan360-dast-action@main
         env:
-          ACCEPTSSL: "true"
+          ACCEPTSSL: "true"           # TLS skipped by default; set "false" to enforce verification
         with:
-          # ----- connection -----
           baseurl:        https://ascp.appscan.local
           asoc_key:       local_1a6a995b-1677-e766-1272-f41560d07efa
           asoc_secret:    kjC/iCNyaiBBmSi4gKOnweuv3nd9diOKJPehTJC/72Q4
@@ -50,6 +48,7 @@ jobs:
           #fail_by_severity: true
           #failure_threshold: High
           #fail_for_noncompliance: false
+
       - name: Upload security report
         if: success() || failure()
         uses: actions/upload-artifact@v4
