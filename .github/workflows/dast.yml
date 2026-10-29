@@ -31,15 +31,7 @@ jobs:
           scan_name:      "ALEX-GHA-${{ github.ref_name }}-${{ github.run_number }}"
           optimization:   Fastest
           login_method:   none
-          # login_method: userpass
-          # login_user:     ${{ secrets.SCAN_USER }}
-          # login_password: ${{ secrets.SCAN_PASSWORD }}
-          # login_method: recorded
-          # login_sequence_file: login.dast.config
-          # --- or configure from an AppScan Standard file instead: ---
-          # dynamic_scan_type: upload
-          # scan_or_scant_file: myapp-explored.scan
-          # scan_type: TestOnly                # FullScan | TestOnly | ReportOnly
+
 
           # ----- network -----
           #network: private
