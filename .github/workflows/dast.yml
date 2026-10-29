@@ -1,8 +1,6 @@
 name: DAST
 on:
   workflow_dispatch:          # "Run workflow" button
-  schedule:
-    - cron: '0 2 * * *'       # nightly
 
 concurrency:
   group: appscan-dast
@@ -10,7 +8,7 @@ concurrency:
 
 jobs:
   dast:
-    runs-on: [self-hosted, linux]   # or [self-hosted, windows] — the action supports both
+    runs-on: [self-hosted, windows]   # or [self-hosted, windows] — the action supports both
     steps:
       - uses: actions/checkout@v4
 
