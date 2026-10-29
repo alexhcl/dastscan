@@ -49,7 +49,7 @@ jobs:
   split:
     needs: monitor
     if: needs.monitor.outputs.reports != '' && needs.monitor.outputs.reports != '[]'
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted, windows]
     strategy:
       fail-fast: false
       matrix:
