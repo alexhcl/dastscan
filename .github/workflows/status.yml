@@ -12,7 +12,7 @@ on:
 
 jobs:
   monitor:
-    runs-on: [self-hosted, linux]   # or [self-hosted, windows] — both work now
+    runs-on: [self-hosted, windows]   # or [self-hosted, windows] — both work now
     outputs:
       # JSON array of report filenames, emitted directly by the action.
       reports: ${{ steps.mon.outputs.monitor_report_files_json }}
