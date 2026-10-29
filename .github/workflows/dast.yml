@@ -23,7 +23,7 @@ jobs:
           asoc_secret:    kjC/iCNyaiBBmSi4gKOnweuv3nd9diOKJPehTJC/72Q4
           application_id: 66026183-1ada-4a2f-be84-068dfdf384aa
           rescan_latest:  false                    # first run creates, then rescans
-          starting_URL:   https://staging.yourapp.com   # used on the first run only
+          starting_URL:   http://atletiirosii.info/   # used on the first run only
           scan_name:      "ALEX-GHA-${{ github.ref_name }}-${{ github.run_number }}"
           optimization:   Fastest
           login_method:   none
